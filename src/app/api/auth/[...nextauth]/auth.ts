@@ -1,15 +1,16 @@
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import UserModel from "@/models/user.model";
 import dbConnection from "@/lib/dbConnection";
+import UserModel from "@/models/user.model";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
-    Credentials({
+    CredentialsProvider({
+      id: "credentials",
       name: "Credentials",
       credentials: {
-        email: { label: "Email" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials: any): Promise<any> {
@@ -22,27 +23,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             ],
           });
           if (!user) {
-            throw new Error("User not found");
+            throw new Error("No user found with this email");
           }
           if (!user.isVerified) {
-            throw new Error("Verify your account first");
+            throw new Error("Please verify your account before logging in");
           }
           const isPasswordCorrect = await bcrypt.compare(
             credentials.password,
             user.password
           );
-          if (!isPasswordCorrect) {
+          if (isPasswordCorrect) {
+            return user;
+          } else {
             throw new Error("Incorrect password");
           }
-          return user;
-        } catch (error: any) {
-          throw new Error(error);
+        } catch (err: any) {
+          throw new Error(err);
         }
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user }) {
       if (user) {
         token._id = user._id?.toString();
         token.isVerified = user.isVerified;
@@ -51,7 +53,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return token;
     },
-    async session({ session, token }: any) {
+    async session({ session, token }) {
       if (token) {
         session.user._id = token._id;
         session.user.isVerified = token.isVerified;
@@ -64,8 +66,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
   },
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/sign-in",
   },
-  secret: process.env.NEXTAUTH_SECRET,
-});
+};
