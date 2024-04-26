@@ -6,15 +6,20 @@ export interface Message extends Document {
   updatedAt: Date;
 }
 
-const messageSchema: Schema<Message> = new Schema(
-  {
-    content: {
-      type: String,
-      required: true,
-    },
+const messageSchema: Schema<Message> = new Schema({
+  content: {
+    type: String,
+    required: true,
   },
-  { timestamps: true }
-);
+  createdAt: {
+    type: Date,
+    required: true,
+  },
+  updatedAt: {
+    type: Date,
+    required: true,
+  },
+});
 
 export interface User extends Document {
   username: string;
