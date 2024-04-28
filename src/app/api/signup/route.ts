@@ -35,7 +35,21 @@ export async function POST(request: Request) {
         isPresent.password = hashedPassword;
         isPresent.verifyCode = verifyCode;
         isPresent.verifyCodeExpiry = expiresIn;
-        await isPresent.save();
+        const sentEmail = await sendVerificationEmail({
+          email,
+          username,
+          verifyCode,
+        });
+        if (!sentEmail.success) {
+          return Response.json(
+            {
+              success: false,
+              message: sentEmail.message,
+            },
+            { status: 500 }
+          );
+        }
+        await isPresent.save({ validateBeforeSave: true });
       }
     } else {
       const newUser = {
@@ -45,21 +59,21 @@ export async function POST(request: Request) {
         verifyCode,
         verifyCodeExpiry: expiresIn,
       };
+      const sentEmail = await sendVerificationEmail({
+        email,
+        username,
+        verifyCode,
+      });
+      if (!sentEmail.success) {
+        return Response.json(
+          {
+            success: false,
+            message: sentEmail.message,
+          },
+          { status: 500 }
+        );
+      }
       await UserModel.create(newUser);
-    }
-    const sentEmail = await sendVerificationEmail({
-      email,
-      username,
-      verifyCode,
-    });
-    if (!sentEmail.success) {
-      return Response.json(
-        {
-          success: false,
-          message: sentEmail.message,
-        },
-        { status: 500 }
-      );
     }
     return Response.json(
       {

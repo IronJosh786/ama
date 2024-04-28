@@ -30,8 +30,8 @@ export interface User extends Document {
   verifyCode: string;
   verifyCodeExpiry: Date;
   isVerified?: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  // createdAt: Date;
+  // updatedAt: Date;
 }
 
 const userSchema: Schema<User> = new Schema(
@@ -70,12 +70,12 @@ const userSchema: Schema<User> = new Schema(
       type: Boolean,
       default: false,
     },
-  },
-  { timestamps: true }
+  }
+  // { timestamps: true }
 );
 
 const UserModel =
-  (mongoose.models.User as mongoose.Model<User>) ||
+  (mongoose.models?.User as mongoose.Model<User>) ||
   mongoose.model<User>("User", userSchema);
 
 export default UserModel;

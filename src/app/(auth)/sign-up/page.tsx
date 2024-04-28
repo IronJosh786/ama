@@ -23,7 +23,6 @@ import { ApiResponse } from "@/types/apiResponse";
 
 const Page = () => {
   const [username, setUsername] = useState("");
-  //   const [isSubmitting, setIsSubmitting] = useState(false);
   const [usernameMessage, setUsernameMessage] = useState("");
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
 
@@ -40,11 +39,10 @@ const Page = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
-    // setIsSubmitting(true);
     try {
       const response = await axios.post(`/api/signup`, data);
       toast.success(response.data.message);
-      router.push("/sign-in");
+      router.replace(`/verify/${username}`);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast.error(axiosError.response?.data.message);
