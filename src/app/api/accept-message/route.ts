@@ -82,7 +82,6 @@ export async function GET(request: Request) {
     return Response.json(
       {
         success: true,
-        message: "Fetched the message acceptance status",
         acceptMessage: currentUser?.isAcceptingMessage,
       },
       { status: 200 }
