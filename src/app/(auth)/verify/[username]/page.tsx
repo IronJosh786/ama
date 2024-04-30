@@ -15,11 +15,16 @@ import { Button } from "@/components/ui/button";
 import { ApiResponse } from "@/types/apiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
-import { VerifySchema } from "@/app/api/verify-code/route";
+import { verifyCodeSchema } from "@/schemas/verifyCodeSchema";
 
 const Page = () => {
   const router = useRouter();
   const param = useParams<{ username: string }>();
+
+  const VerifySchema = z.object({
+    code: verifyCodeSchema,
+  });
+
   const form = useForm<z.infer<typeof VerifySchema>>({
     resolver: zodResolver(VerifySchema),
     defaultValues: {

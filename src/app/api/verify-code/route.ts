@@ -4,7 +4,7 @@ import dbConnection from "@/lib/dbConnection";
 import { usernameValidation } from "@/schemas/signUpSchema";
 import { verifyCodeSchema } from "@/schemas/verifyCodeSchema";
 
-export const VerifySchema = z.object({
+const VerifySchema = z.object({
   code: verifyCodeSchema,
 });
 
