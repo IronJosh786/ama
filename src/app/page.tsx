@@ -48,7 +48,8 @@ const Layout = () => {
       </Carousel>
       <Link
         id="send_btn"
-        href={"https://ama-opal.vercel.app/u/faizan"}
+        href={`${process.env.DOMAIN}`}
+        target="_blank"
         className="mt-4"
       >
         <div className="svg-wrapper-1">
